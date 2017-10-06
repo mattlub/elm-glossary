@@ -3,24 +3,8 @@ module Main exposing (..)
 import Html exposing (Html, button, div, h1, h3, ul, li, input, label, span, text)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
-
-
--- MODEL
-
-
-type alias TechnicalTerm =
-    { text : String
-    , english : String
-    , arabic : String
-    }
-
-
-type alias Model =
-    { terms : List TechnicalTerm
-    , searchInput : String
-    , displayedWord : Maybe TechnicalTerm
-    }
-
+import Model exposing (TechnicalTerm, Model)
+import Data exposing (initialModel)
 
 
 -- VIEW
@@ -28,12 +12,27 @@ type alias Model =
 
 createSearchResult : TechnicalTerm -> Html Msg
 createSearchResult term =
-    li [] [ text term.text ]
+    li [ onClick (ClickTerm term) ] [ text term.text ]
 
 
 containsString : String -> TechnicalTerm -> Bool
 containsString string term =
     String.contains string term.text
+
+
+wordDisplaySection : Maybe TechnicalTerm -> Html Msg
+wordDisplaySection term =
+    case term of
+        Nothing ->
+            div []
+                [ text "select a word" ]
+
+        Just term ->
+            div []
+                [ text term.text
+                , text term.english
+                , text term.arabic
+                ]
 
 
 view : Model -> Html Msg
@@ -46,6 +45,7 @@ view model =
             (List.filter (containsString model.searchInput) model.terms
                 |> List.map createSearchResult
             )
+        , (wordDisplaySection model.displayedWord)
         ]
 
 
@@ -71,7 +71,7 @@ update msg model =
                 |> addCmdNone
 
         ClickTerm term ->
-            model
+            { model | displayedWord = (Just term) }
                 |> addCmdNone
 
 
@@ -81,19 +81,7 @@ update msg model =
 
 model : Model
 model =
-    { terms =
-        [ { text = "full-stack"
-          , english = "The whole technology stack for an application, including the front-end, back-end and database technology. For example, a full-stack developer might use the MEAN stack, which is MongoDB, Express, Angular and Node."
-          , arabic = ""
-          }
-        , { text = "browser (as in web browser)"
-          , english = "A program which allows users to browse web pages. For example, Google Chrome or Mozilla Firefox."
-          , arabic = "This text should be arabic"
-          }
-        ]
-    , searchInput = ""
-    , displayedWord = Nothing
-    }
+    initialModel
 
 
 init : ( Model, Cmd Msg )
