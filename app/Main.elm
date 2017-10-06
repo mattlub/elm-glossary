@@ -41,16 +41,23 @@ wordDisplaySection term =
                 ]
 
 
-view : Model -> Html Msg
-view model =
+searchSection : Model -> Html Msg
+searchSection model =
     div []
-        [ h1 [] [ text "Glossary" ]
-        , h3 [] [ text "Search Words" ]
+        [ h3 [] [ text "Search" ]
         , input [ onInput ChangeSearchInput, value model.searchInput ] []
         , ul []
             (List.filter (containsString model.searchInput) model.terms
                 |> List.map createSearchResult
             )
+        ]
+
+
+view : Model -> Html Msg
+view model =
+    div []
+        [ h1 [] [ text "Glossary" ]
+        , searchSection model
         , wordDisplaySection model.displayedWord
         ]
 
