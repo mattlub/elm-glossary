@@ -12,7 +12,7 @@ import Data exposing (initialModel)
 
 createSearchResult : TechnicalTerm -> Html Msg
 createSearchResult term =
-    li [ onClick (ClickTerm term) ] [ text term.text ]
+    li [ class "results-li", onClick (ClickTerm term) ] [ text term.text ]
 
 
 containsString : String -> TechnicalTerm -> Bool
@@ -24,11 +24,11 @@ wordDisplaySection : Maybe TechnicalTerm -> Html Msg
 wordDisplaySection term =
     case term of
         Nothing ->
-            div []
+            div [ class "word-section" ]
                 [ text "select a word to see the definition!" ]
 
         Just term ->
-            div []
+            div [ class "word-section" ]
                 [ text term.text
                 , div []
                     [ h3 [] [ text "English" ]
@@ -41,13 +41,37 @@ wordDisplaySection term =
                 ]
 
 
+startsWithComesFirst : String -> TechnicalTerm -> TechnicalTerm -> Order
+startsWithComesFirst searchString a b =
+    let
+        aStartsWith =
+            String.startsWith searchString a.text
+
+        bStartsWith =
+            String.startsWith searchString b.text
+    in
+        case ( aStartsWith, bStartsWith ) of
+            ( True, True ) ->
+                EQ
+
+            ( True, False ) ->
+                LT
+
+            ( False, True ) ->
+                GT
+
+            ( False, False ) ->
+                EQ
+
+
 searchSection : Model -> Html Msg
 searchSection model =
-    div []
+    div [ class "search-section" ]
         [ h3 [] [ text "Search" ]
-        , input [ onInput ChangeSearchInput, value model.searchInput ] []
-        , ul []
+        , input [ class "search-input", onInput ChangeSearchInput, value model.searchInput ] []
+        , ul [ class "results-list" ]
             (List.filter (containsString model.searchInput) model.terms
+                |> List.sortWith (startsWithComesFirst model.searchInput)
                 |> List.map createSearchResult
             )
         ]
@@ -56,9 +80,11 @@ searchSection model =
 view : Model -> Html Msg
 view model =
     div []
-        [ h1 [] [ text "Glossary" ]
-        , searchSection model
-        , wordDisplaySection model.displayedWord
+        [ h1 [] [ text "Founders and Coders Glossary" ]
+        , div [ class "content" ]
+            [ searchSection model
+            , wordDisplaySection model.displayedWord
+            ]
         ]
 
 
