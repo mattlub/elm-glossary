@@ -1,3 +1,7 @@
+body {
+  font-family: sans-serif;
+}
+
 .content {
   display: flex;
 }
@@ -11,16 +15,29 @@
 }
 
 .search-input {
+  border: 2px solid cornflowerblue;
+  padding: 0.5em;
+  font-size: 1.3em;
+  display: block;
   width: 80%;
-  margin: auto;
+  margin: 0.5em auto;
+  border-radius: 0.5em;
 }
 
 .results-list {
+  margin: auto;
   width: 80%;
   list-style: none;
   padding: 0;
 }
 
 .results-li {
+  padding: 0.3em 0.5em;
+  border: 1px solid lightgrey;
+  margin: 0.2em;
+  border-radius: 1em;
+}
 
+.red {
+  color: red;
 }

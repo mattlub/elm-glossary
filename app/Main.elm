@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, div, h1, h3, ul, li, input, text)
+import Html exposing (Html, div, h1, h3, h5, ul, li, input, text, span)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Model exposing (TechnicalTerm, Model)
@@ -8,11 +8,34 @@ import Data exposing (initialModel)
 
 
 -- VIEW
+-- creates span with red class if text equals searchInput
 
 
-createSearchResult : TechnicalTerm -> Html Msg
-createSearchResult term =
-    li [ class "results-li", onClick (ClickTerm term) ] [ text term.text ]
+createSpan : String -> String -> Html Msg
+createSpan searchInput str =
+    if String.contains searchInput str then
+        span [ class "red" ] [ text str ]
+    else
+        span [] [ text str ]
+
+
+
+-- creates search results li element
+
+
+createSearchResult : String -> TechnicalTerm -> Html Msg
+createSearchResult searchInput term =
+    if String.length searchInput == 0 then
+        li [ class "results-li", onClick (ClickTerm term) ]
+            [ text term.text ]
+    else
+        li [ class "results-li", onClick (ClickTerm term) ]
+            (String.split
+                searchInput
+                term.text
+                |> List.intersperse searchInput
+                |> List.map (createSpan searchInput)
+            )
 
 
 containsString : String -> TechnicalTerm -> Bool
@@ -29,13 +52,14 @@ wordDisplaySection term =
 
         Just term ->
             div [ class "word-section" ]
-                [ text term.text
+                [ h3 []
+                    [ text term.text ]
                 , div []
-                    [ h3 [] [ text "English" ]
+                    [ h5 [] [ text "English" ]
                     , text term.english
                     ]
                 , div []
-                    [ h3 [] [ text "Arabic" ]
+                    [ h5 [] [ text "Arabic" ]
                     , text term.arabic
                     ]
                 ]
@@ -67,12 +91,17 @@ startsWithComesFirst searchString a b =
 searchSection : Model -> Html Msg
 searchSection model =
     div [ class "search-section" ]
-        [ h3 [] [ text "Search" ]
-        , input [ class "search-input", onInput ChangeSearchInput, value model.searchInput ] []
+        [ input
+            [ class "search-input"
+            , onInput ChangeSearchInput
+            , value model.searchInput
+            , placeholder "Search!"
+            ]
+            []
         , ul [ class "results-list" ]
             (List.filter (containsString model.searchInput) model.terms
                 |> List.sortWith (startsWithComesFirst model.searchInput)
-                |> List.map createSearchResult
+                |> List.map (createSearchResult model.searchInput)
             )
         ]
 
