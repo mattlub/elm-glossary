@@ -65,7 +65,9 @@ wordDisplaySection term =
     case term of
         Nothing ->
             div [ class "word-section" ]
-                [ text "select a word to see the definition!" ]
+                [ h3 []
+                    [ text "search or select a term to see its definition in English and Arabic." ]
+                ]
 
         Just term ->
             div [ class "word-section" ]
@@ -158,8 +160,20 @@ update msg model =
                 |> addCmdNone
 
         ClickTerm term ->
-            { model | displayedTerm = (Just term) }
-                |> addCmdNone
+            let
+                newDisplayedTerm =
+                    case model.displayedTerm of
+                        Nothing ->
+                            Just term
+
+                        Just displayedTerm ->
+                            if displayedTerm == term then
+                                Nothing
+                            else
+                                (Just term)
+            in
+                { model | displayedTerm = newDisplayedTerm }
+                    |> addCmdNone
 
 
 
