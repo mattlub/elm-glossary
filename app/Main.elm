@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, div, h1, h3, h5, ul, li, input, text, span)
+import Html exposing (Html, div, h1, h2, h3, h4, ul, li, input, text, span)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Model exposing (TechnicalTerm, Model)
@@ -52,14 +52,14 @@ wordDisplaySection term =
 
         Just term ->
             div [ class "word-section" ]
-                [ h3 []
+                [ h2 []
                     [ text term.text ]
-                , div []
-                    [ h5 [] [ text "English" ]
+                , div [ class "translation" ]
+                    [ h4 [] [ text "English" ]
                     , text term.english
                     ]
-                , div []
-                    [ h5 [] [ text "Arabic" ]
+                , div [ class "translation" ]
+                    [ h4 [] [ text "Arabic" ]
                     , text term.arabic
                     ]
                 ]

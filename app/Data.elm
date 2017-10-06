@@ -14,6 +14,14 @@ initialModel =
           , english = "A program which allows users to browse web pages. For example, Google Chrome or Mozilla Firefox."
           , arabic = "This text should be arabic"
           }
+        , { text = "front-end"
+          , english = "The part of the application which the user sees and interacts which. For example, HTML, CSS, and Javascript are front-end technologies."
+          , arabic = "This text should be arabic"
+          }
+        , { text = "TDD (test-driven development)"
+          , english = "test-driven development is a method of development where you write (failing) tests before writing the code to pass the tests."
+          , arabic = ""
+          }
         ]
     , searchInput = ""
     , displayedWord = Nothing
