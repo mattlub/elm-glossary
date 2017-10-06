@@ -1,0 +1,26 @@
+.content {
+  display: flex;
+}
+
+.word-section {
+  width: 50%;
+}
+
+.search-section {
+  width: 50%;
+}
+
+.search-input {
+  width: 80%;
+  margin: auto;
+}
+
+.results-list {
+  width: 80%;
+  list-style: none;
+  padding: 0;
+}
+
+.results-li {
+
+}
