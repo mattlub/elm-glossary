@@ -23,19 +23,36 @@ createSpan searchInput str =
 -- creates search results li element
 
 
-createSearchResult : String -> TechnicalTerm -> Html Msg
-createSearchResult searchInput term =
-    if String.length searchInput == 0 then
-        li [ class "results-li", onClick (ClickTerm term) ]
-            [ text term.text ]
-    else
-        li [ class "results-li", onClick (ClickTerm term) ]
-            (String.split
-                searchInput
-                term.text
-                |> List.intersperse searchInput
-                |> List.map (createSpan searchInput)
-            )
+createSearchResult : Maybe TechnicalTerm -> String -> TechnicalTerm -> Html Msg
+createSearchResult displayedTerm searchInput term =
+    let
+        liContents =
+            if String.length searchInput == 0 then
+                [ text term.text ]
+            else
+                (String.split
+                    searchInput
+                    term.text
+                    |> List.intersperse searchInput
+                    |> List.map (createSpan searchInput)
+                )
+
+        liClass =
+            case displayedTerm of
+                Nothing ->
+                    "results-li"
+
+                Just value ->
+                    if value.text == term.text then
+                        "results-li displayed"
+                    else
+                        "results-li"
+    in
+        li
+            [ class liClass
+            , onClick (ClickTerm term)
+            ]
+            liContents
 
 
 containsString : String -> TechnicalTerm -> Bool
@@ -101,7 +118,7 @@ searchSection model =
         , ul [ class "results-list" ]
             (List.filter (containsString model.searchInput) model.terms
                 |> List.sortWith (startsWithComesFirst model.searchInput)
-                |> List.map (createSearchResult model.searchInput)
+                |> List.map (createSearchResult model.displayedTerm model.searchInput)
             )
         ]
 
@@ -112,7 +129,7 @@ view model =
         [ h1 [] [ text "Founders and Coders Glossary" ]
         , div [ class "content" ]
             [ searchSection model
-            , wordDisplaySection model.displayedWord
+            , wordDisplaySection model.displayedTerm
             ]
         ]
 
@@ -139,7 +156,7 @@ update msg model =
                 |> addCmdNone
 
         ClickTerm term ->
-            { model | displayedWord = (Just term) }
+            { model | displayedTerm = (Just term) }
                 |> addCmdNone
 
 

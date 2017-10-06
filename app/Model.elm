@@ -13,5 +13,5 @@ type alias TechnicalTerm =
 type alias Model =
     { terms : List TechnicalTerm
     , searchInput : String
-    , displayedWord : Maybe TechnicalTerm
+    , displayedTerm : Maybe TechnicalTerm
     }

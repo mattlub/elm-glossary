@@ -49,6 +49,10 @@ h1 {
   border-radius: 1em;
 }
 
+.displayed {
+  background-color: lightgreen;
+}
+
 .red {
   color: red;
 }

@@ -24,5 +24,5 @@ initialModel =
           }
         ]
     , searchInput = ""
-    , displayedWord = Nothing
+    , displayedTerm = Nothing
     }
