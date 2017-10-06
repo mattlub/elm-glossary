@@ -73,11 +73,13 @@ wordDisplaySection term =
                     [ text term.text ]
                 , div [ class "translation" ]
                     [ h4 [] [ text "English" ]
-                    , text term.english
+                    , div [ class "english" ]
+                        [ text term.english ]
                     ]
                 , div [ class "translation" ]
                     [ h4 [] [ text "Arabic" ]
-                    , text term.arabic
+                    , div [ class "arabic" ]
+                        [ text term.arabic ]
                     ]
                 ]
 

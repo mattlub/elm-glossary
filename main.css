@@ -21,6 +21,10 @@ h1 {
 .translation {
 }
 
+.arabic {
+  direction: rtl;
+}
+
 .search-section {
   width: 50%;
 }
