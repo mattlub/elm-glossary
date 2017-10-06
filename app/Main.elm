@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, button, div, h1, h3, ul, li, input, label, span, text)
+import Html exposing (Html, div, h1, h3, ul, li, input, text)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Model exposing (TechnicalTerm, Model)
@@ -25,13 +25,19 @@ wordDisplaySection term =
     case term of
         Nothing ->
             div []
-                [ text "select a word" ]
+                [ text "select a word to see the definition!" ]
 
         Just term ->
             div []
                 [ text term.text
-                , text term.english
-                , text term.arabic
+                , div []
+                    [ h3 [] [ text "English" ]
+                    , text term.english
+                    ]
+                , div []
+                    [ h3 [] [ text "Arabic" ]
+                    , text term.arabic
+                    ]
                 ]
 
 
@@ -45,7 +51,7 @@ view model =
             (List.filter (containsString model.searchInput) model.terms
                 |> List.map createSearchResult
             )
-        , (wordDisplaySection model.displayedWord)
+        , wordDisplaySection model.displayedWord
         ]
 
 
