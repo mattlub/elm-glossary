@@ -47,10 +47,15 @@ h1 {
 }
 
 .results-li {
-  padding: 0.3em 0.5em;
-  border: 1px solid lightgrey;
+  box-sizing: border-box;
+  padding: 0.4em 0.6em;
+  border: 2px solid white;
   margin: 0.2em;
   border-radius: 1em;
+}
+
+.results-li.selected {
+  border: 2px solid lightgrey;
 }
 
 .displayed {

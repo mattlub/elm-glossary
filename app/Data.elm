@@ -25,4 +25,5 @@ initialModel =
         ]
     , searchInput = ""
     , displayedTerm = Nothing
+    , selectedTermIndex = 0
     }

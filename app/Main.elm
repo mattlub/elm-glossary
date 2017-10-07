@@ -5,6 +5,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Model exposing (TechnicalTerm, Model)
 import Data exposing (initialModel)
+import Keyboard
 
 
 -- VIEW
@@ -19,13 +20,19 @@ createSpan searchInput str =
         span [] [ text str ]
 
 
+join : String -> String -> String -> String
+join joiner a b =
+    a ++ joiner ++ b
+
+
 
 -- creates search results li element
 
 
-createSearchResult : Maybe TechnicalTerm -> String -> TechnicalTerm -> Html Msg
-createSearchResult displayedTerm searchInput term =
+createSearchResult : Maybe TechnicalTerm -> Int -> String -> Int -> TechnicalTerm -> Html Msg
+createSearchResult displayedTerm selectedTermIndex searchInput indexInResults term =
     let
+        liContents : List (Html Msg)
         liContents =
             if String.length searchInput == 0 then
                 [ text term.text ]
@@ -37,16 +44,30 @@ createSearchResult displayedTerm searchInput term =
                     |> List.map (createSpan searchInput)
                 )
 
-        liClass =
+        liClassDisplayed : Maybe String
+        liClassDisplayed =
             case displayedTerm of
                 Nothing ->
-                    "results-li"
+                    Nothing
 
                 Just value ->
                     if value.text == term.text then
-                        "results-li displayed"
+                        Just "displayed"
                     else
-                        "results-li"
+                        Nothing
+
+        liClassSelected : Maybe String
+        liClassSelected =
+            if selectedTermIndex == indexInResults then
+                Just "selected"
+            else
+                Nothing
+
+        liClass : String
+        liClass =
+            [ Just "results-li", liClassDisplayed, liClassSelected ]
+                |> List.filterMap identity
+                |> List.foldr (join " ") ""
     in
         li
             [ class liClass
@@ -109,6 +130,12 @@ startsWithComesFirst searchString a b =
                 EQ
 
 
+getSearchResults : String -> List TechnicalTerm -> List TechnicalTerm
+getSearchResults search allTerms =
+    List.filter (containsString search) allTerms
+        |> List.sortWith (startsWithComesFirst search)
+
+
 searchSection : Model -> Html Msg
 searchSection model =
     div [ class "search-section" ]
@@ -120,9 +147,8 @@ searchSection model =
             ]
             []
         , ul [ class "results-list" ]
-            (List.filter (containsString model.searchInput) model.terms
-                |> List.sortWith (startsWithComesFirst model.searchInput)
-                |> List.map (createSearchResult model.displayedTerm model.searchInput)
+            (getSearchResults model.searchInput model.terms
+                |> List.indexedMap (createSearchResult model.displayedTerm model.selectedTermIndex model.searchInput)
             )
         ]
 
@@ -130,7 +156,7 @@ searchSection model =
 view : Model -> Html Msg
 view model =
     div []
-        [ h1 [] [ text "Founders and Coders Glossary" ]
+        [ h1 [] [ text "F&C glossary" ]
         , div [ class "content" ]
             [ searchSection model
             , wordDisplaySection model.displayedTerm
@@ -145,11 +171,31 @@ view model =
 type Msg
     = ChangeSearchInput String
     | ClickTerm TechnicalTerm
+    | KeyMsg Keyboard.KeyCode
+
+
+getAtIndex : Int -> List TechnicalTerm -> Maybe TechnicalTerm
+getAtIndex i terms =
+    List.drop i terms
+        |> List.head
 
 
 addCmdNone : Model -> ( Model, Cmd Msg )
 addCmdNone model =
     ( model, Cmd.none )
+
+
+getNewDisplayedTerm : Maybe TechnicalTerm -> TechnicalTerm -> Maybe TechnicalTerm
+getNewDisplayedTerm displayedTerm clickedTerm =
+    case displayedTerm of
+        Nothing ->
+            Just clickedTerm
+
+        Just displayedTerm ->
+            if displayedTerm == clickedTerm then
+                Nothing
+            else
+                (Just clickedTerm)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -159,21 +205,78 @@ update msg model =
             { model | searchInput = newInput }
                 |> addCmdNone
 
-        ClickTerm term ->
+        ClickTerm clickedTerm ->
             let
                 newDisplayedTerm =
-                    case model.displayedTerm of
-                        Nothing ->
-                            Just term
-
-                        Just displayedTerm ->
-                            if displayedTerm == term then
-                                Nothing
-                            else
-                                (Just term)
+                    getNewDisplayedTerm model.displayedTerm clickedTerm
             in
                 { model | displayedTerm = newDisplayedTerm }
                     |> addCmdNone
+
+        KeyMsg keyCode ->
+            let
+                searchResults =
+                    getSearchResults model.searchInput model.terms
+
+                resultsLength =
+                    List.length searchResults
+            in
+                case keyCode of
+                    -- up
+                    38 ->
+                        let
+                            newIndex =
+                                if model.selectedTermIndex > 0 then
+                                    model.selectedTermIndex - 1
+                                else
+                                    0
+                        in
+                            { model | selectedTermIndex = newIndex }
+                                |> addCmdNone
+
+                    -- down
+                    40 ->
+                        let
+                            newIndex =
+                                if model.selectedTermIndex < resultsLength - 1 then
+                                    model.selectedTermIndex + 1
+                                else
+                                    resultsLength - 1
+                        in
+                            { model | selectedTermIndex = newIndex }
+                                |> addCmdNone
+
+                    -- enter
+                    13 ->
+                        let
+                            selectedTerm =
+                                getAtIndex model.selectedTermIndex searchResults
+                        in
+                            case selectedTerm of
+                                Nothing ->
+                                    model
+                                        |> addCmdNone
+
+                                Just term ->
+                                    let
+                                        newDisplayedTerm =
+                                            getNewDisplayedTerm model.displayedTerm term
+                                    in
+                                        { model | displayedTerm = newDisplayedTerm }
+                                            |> addCmdNone
+
+                    _ ->
+                        model
+                            |> addCmdNone
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Keyboard.downs KeyMsg
 
 
 
@@ -199,5 +302,5 @@ main =
         { init = init
         , view = view
         , update = update
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = subscriptions
         }

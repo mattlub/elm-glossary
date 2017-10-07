@@ -14,4 +14,5 @@ type alias Model =
     { terms : List TechnicalTerm
     , searchInput : String
     , displayedTerm : Maybe TechnicalTerm
+    , selectedTermIndex : Int
     }
