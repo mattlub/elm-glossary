@@ -3,6 +3,7 @@ module Main exposing (..)
 import Html exposing (Html, div, h1, h2, h3, h4, ul, li, input, text, span)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Regex
 import Model exposing (TechnicalTerm, Model)
 import Data exposing (initialModel)
 import Keyboard
@@ -78,7 +79,7 @@ createSearchResult displayedTerm selectedTermIndex searchInput indexInResults te
 
 containsString : String -> TechnicalTerm -> Bool
 containsString string term =
-    String.contains string term.text
+    Regex.contains (Regex.regex string |> Regex.caseInsensitive) term.text
 
 
 wordDisplaySection : Maybe TechnicalTerm -> Html Msg
