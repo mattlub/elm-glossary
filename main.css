@@ -1,5 +1,6 @@
 body {
   font-family: sans-serif;
+  background: aliceblue;
 }
 
 h1 {
@@ -47,6 +48,7 @@ h1 {
 }
 
 .results-li {
+  background: white;
   box-sizing: border-box;
   padding: 0.4em 0.6em;
   border: 2px solid white;
@@ -59,7 +61,8 @@ h1 {
 }
 
 .displayed {
-  background-color: lightgreen;
+  /* light green */
+  background-color: #b4ff98;
 }
 
 .red {
