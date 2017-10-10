@@ -15,7 +15,7 @@ h1 {
 }
 
 .word-section {
-  width: 50%;
+  width: 60%;
   padding: 0em 1em;
 }
 
@@ -24,10 +24,11 @@ h1 {
 
 .arabic {
   direction: rtl;
+  text-align: left;
 }
 
 .search-section {
-  width: 50%;
+  width: 40%;
 }
 
 .search-input {
